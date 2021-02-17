@@ -18,7 +18,91 @@ library(scales)
 library(ggthemes)
 #install.packages("unmarked")
 library(unmarked)
+#install.packages("auk")
+library(auk)
+library(lubridate)
+#install.packages("raster")
+library(raster)
+#installed.packages("dgGridr")
+library(dgGridr)
+#install.packages("ebirdst")
+library(ebirdst)
+#install.packages("fields")
+library(fields)
+#install.packages("AICcmodavg")
+library(AICcmodavg)
+library(sf)
+#install.packages("rgdal")
+library(rgdal)
 ```
 
 -Often we won't know how many any individuals are occupying a study area.  We only know how many have been detected at each survey point.  Other individuals? Overlap between detections?
 -Occupancy analysis allows us to use these detections to get an idea of actual abundance.
+-In the video example, Bushrats are detected at 0.5 (50%) of sites.  0.5 is the "Naive Occupancy"
+
+p = detection probability (CHANCE OF DETECTING AN ANIMAL IF THEY OCCUR THERE)
+psi = occupancy.
+
+-Occupancy analysis takes into acct our imperfect detection prob, and studies the daily pattern of detection and non-detection at a site.  Also allows us to calculate Confidence Intervals.
+
+
+Example analysis using an eBird data set (I hope!!)
+```{r}
+#First, we must resolve some namespace conflicts between packages.
+select <- dplyr::select()
+projection <- raster::projection()
+
+#Next, we set a random number seed.  This should make our results more repeatable!
+set.seed(1)
+
+#We then setup an output director for saved results.
+if(!dir.exists("output")) {
+  dir.create("output")
+}
+
+#Import data from eBird. Note that occupancy modeling requires an integer response
+ebird <- read_csv("ebd_woothr_june_bcr27_zf.csv") %>%
+  mutate(year = year(observation_date),
+                     species_observed = as.integer(species_observed))
+
+#Deviating from lesson to get a feel for the data
+ebird %>%
+  count(scientific_name, sort = TRUE)
+
+ebird %>%
+  count(observer_id, sort = TRUE)
+
+ebird %>%
+  count(state_code, sort = TRUE)
+
+#Ok. So we are modeling data from a single bird species over 11 states, with data from many observers.
+
+#Loading modis land cover covariates
+habitat <- read_csv("pland-elev_location-year.csv") %>%
+  mutate(year = as.integer(year))
+
+habitat %>%
+  view()
+
+#Joining eBird and modis data.
+ebird_habitat <- inner_join(ebird, habitat, by = c("locality_id", "year"))
+
+#Loading prediction surface
+pred_surface <- read_csv("pland-elev_prediction-surface.csv")
+
+#Latest year of landcover data.
+max_lc_year <- pred_surface$year[1]
+r <- raster("prediction-surface.tif")
+
+#Let's load our gis data for making maps.
+map_proj <- st_crs(102003)
+
+ne_land <- read_sf("gis-data.gpkg", "ne_land") %>%
+  st_transform(crs = map_proj) %>%
+  st_geometry()
+#Running into issues here with crs not being found... but need to eat breakfast.
+
+```
+
+
+-=
