@@ -1,0 +1,24 @@
+---
+title: "R_Unmarked"
+author: "Jeff Grayum"
+date: "2/17/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading libraries/packages.
+```{r}
+library(tidyverse)
+library(scales)
+library(ggthemes)
+#install.packages("unmarked")
+library(unmarked)
+```
+
+-Often we won't know how many any individuals are occupying a study area.  We only know how many have been detected at each survey point.  Other individuals? Overlap between detections?
+-Occupancy analysis allows us to use these detections to get an idea of actual abundance.
