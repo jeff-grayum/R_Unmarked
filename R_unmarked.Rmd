@@ -114,7 +114,10 @@ Link to example: https://doi90.github.io/lodestar/fitting-occupancy-models-with-
 #IMPERFECT DETECTION -> why these occupancy models are so important.
 #State process: defined by the true occupancy status (site occupied, or it's not..)
 #Observation process: was the species detected?
-#covariates can be nu
+#covariates can be incorporated into the model using  a logit-link function.
+#Assumptions: Site is closed to changes in occupancy during season, prob of occupance is constant across all sites or VARATION IS MODELLED BY COVARIATES, prob of detection is constant across all sites, or variation is modeled by covariates!!, detection of a species and its detection histories at each site are independent.
+
+#This guide will only cover occu() for standand occupancy models.
 
 #This example will use a dataset built into unmarked::, which is handy.
 
@@ -124,6 +127,7 @@ data %>%
   view()
 
 
+#unmarkedFrame formats data to a specific model fitting function.  A special class of object used in this package for organizing our data.
 
 ```
 
