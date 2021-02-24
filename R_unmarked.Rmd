@@ -49,8 +49,9 @@ psi = occupancy.
 Example analysis using an eBird data set (I hope!!)
 ```{r}
 #First, we must resolve some namespace conflicts between packages.
-select <- dplyr::select()
-projection <- raster::projection()
+select <- dplyr::select
+projection <- raster::projection
+map <- purrr::map
 
 #Next, we set a random number seed.  This should make our results more repeatable!
 set.seed(1)
@@ -104,5 +105,30 @@ ne_land <- read_sf("gis-data.gpkg", "ne_land") %>%
 
 ```
 
+
+Haven't had any luck troubleshooting.  Will try working through a different example, hopefully can figure out why crs isnt found after I learn more.
+
+Link to example: https://doi90.github.io/lodestar/fitting-occupancy-models-with-unmarked.html
+```{r}
+#Changes in occupancy are linked to changes in population size as well as pop'n characteristics.
+#IMPERFECT DETECTION -> why these occupancy models are so important.
+#State process: defined by the true occupancy status (site occupied, or it's not..)
+#Observation process: was the species detected?
+#covariates can be nu
+
+#This example will use a dataset built into unmarked::, which is handy.
+
+data <- read.csv(system.file("csv", "widewt.csv", package = "unmarked"))
+
+data %>%
+  view()
+
+
+
+```
+
+```{r}
+
+```
 
 -=
