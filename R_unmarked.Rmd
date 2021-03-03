@@ -261,9 +261,24 @@ siteValue <- apply(X = data[,2:4],
 mean(siteValue)
 ```
 
-
+Accounting for imperfect detection
+-If we assume perfect detection, will underestimate occupanancy, since we likely missed the individuals that were in fact present!
+-Unmarked utilizes empirical Bayes methods to estimate posterior distributions of the random variables (zi)
 ```{r}
+AICbest <- occu(formula = ~ forest + ivel
+                          ~elev,
+                data = umf)
 
+re <- ranef(AICbest)
+EBUP <- bup(re, stat = "mean")
+CI <- confint(re, level = 0.9)
+
+rbind(PAO = c(Estimate = sum(EBUP), colSums(CI)) / 237)
+
+#When we account for imperfect detections, occupancy jumps from 33% to 48%!
 ```
+
+End of first example.  The following example uses a new dataset!
+
 
 -=
