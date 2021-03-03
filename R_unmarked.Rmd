@@ -133,12 +133,26 @@ data %>%
 
 ```
 
--unmarkedFrameOccu requires: 2 dataframes, a list of dataframes.
+-unmarkedFrameOccu requires: 2 dataframes, plus a list of dataframes.
 --> y: dataframe of presense absence records.  Rows are sites, columns are repeat visits.
 --> siteCovs: a datafrome of the site-level covariates.  Things that DON"T change between visits to a particular site(elevation, annual rainfall, distance from road, etc.).  One column per covariate.
 --> obsCovs:  A list of dataframes for the observation level covariates.  Each covariate is it's own dataframe, rows are sites, and columns are repeat visits..  Might be environmental conditions like weather, or methodological variables like survey method (camera trap, pitfall trap, spotlighting, etc).  Think of having datafram for lunar illumination, with rows as different sites, columns as repeat visits.  Another dataframe frame for canopy cover, with rows as sites and columns as repeat visits.  Another dataframe for temperature, with rows as sites and columns as complete visits.  All these various dataframes would be in a list of obsCovs.
 ```{r}
+#Assigining all sites (237), with repeat visits 2-4 to dataframe y.
+y <- data[, 2:4] 
 
+#Assigining site-level covariates (elevation, forest, length) to dataframe siteCovs and all 237 sites
+siteCovs <- data[ , 5:7] 
+
+#Assigning the two covaritates (date, ivel) to their own dataframe, and adding to list obsCovs
+obsCovs <- list(date = data [ , 8:10],
+                ivel = data[ , 11:13]) 
+
+#Adding our two dataframes and our list of covariate dataframes to unmarkedFrameOccu
+umf <- unmarkedFrameOccu(y = y, siteCovs = siteCovs, obsCovs = obsCovs)
+
+summary(umf)
+#IT WORKED.  This is super cool.
 ```
 
 -=
