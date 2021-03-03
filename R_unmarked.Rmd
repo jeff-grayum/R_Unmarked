@@ -46,7 +46,7 @@ psi = occupancy.
 -Occupancy analysis takes into acct our imperfect detection prob, and studies the daily pattern of detection and non-detection at a site.  Also allows us to calculate Confidence Intervals.
 
 
-Example analysis using an eBird data set (I hope!!)
+Example analysis using an eBird data set (I hope!!) --> didn't go well, found a better expample (below)
 ```{r}
 #First, we must resolve some namespace conflicts between packages.
 select <- dplyr::select
@@ -138,7 +138,7 @@ data %>%
 --> siteCovs: a datafrome of the site-level covariates.  Things that DON"T change between visits to a particular site(elevation, annual rainfall, distance from road, etc.).  One column per covariate.
 --> obsCovs:  A list of dataframes for the observation level covariates.  Each covariate is it's own dataframe, rows are sites, and columns are repeat visits..  Might be environmental conditions like weather, or methodological variables like survey method (camera trap, pitfall trap, spotlighting, etc).  Think of having datafram for lunar illumination, with rows as different sites, columns as repeat visits.  Another dataframe frame for canopy cover, with rows as sites and columns as repeat visits.  Another dataframe for temperature, with rows as sites and columns as complete visits.  All these various dataframes would be in a list of obsCovs.
 ```{r}
-#Assigining all sites (237), with repeat visits 2-4 to dataframe y.
+#Assigning all sites (237), with repeat visits 2-4 to dataframe y.
 y <- data[, 2:4] 
 
 #Assigining site-level covariates (elevation, forest, length) to dataframe siteCovs and all 237 sites
@@ -164,6 +164,46 @@ umf@siteCovs$length <- scale(umf@siteCovs$length)
 
 umf@obsCovs$date <- scale(umf@obsCovs$date)
 umf@obsCovs$ivel <- scale(umf@obsCovs$ivel)
+```
+
+Missing data considerations.
+-We have two types of data in these models: Our observation data and our covariate data.  We must account for missing data in these two groups differently.
+---> You are allowed to have missing records in your observation data (varying numbers of repeat visits to sites, loss of data).  As long as a site has at least one observation in can be used in the data.  Any site with zero observations will be removed.
+---> You CANNOT have missing covariate data. If a site is missing the data for a site-level covariate it will be removed before model fitting (if a site is missing observation level covariate data, it will only be removed if it is missing for ALL obs).  This is important!
+
+
+Fitting a model!!
+-Similar to fitting a lm() model
+
+-occu() requires a double right-hand side formula for detection and occupancy covariates, in that order (~detection formula, ~occupancy formula).
+```{r}
+fm <- occu(formula = ~1
+                     ~1,
+           data = umf)
+
+fm
+
+#Not sure what I did, but it worked? Unsure what the "1's" represent, here.
+#Unmarked estimates are on the link-scale (logit for occu(), since it uses logit-link and the backTransform()
+#You need to specify a specfic state or det for occupancy or detection covariates
+#If you have fit a model with covariates, then you need to specify values for them (i.e. What is the probability of occupancy when CovA = X and CovB = Y?)
+
+backTransform(fm, type = "state")
+
+backTransform(fm, type = "det")
+
+#Alternatively, we can define an antilogit function.  I think this just estimates prob of detection?
+antilogit <- function(x) {
+  exp(x) / (1 + exp(x))
+}
+
+antilogit(-0.665)
+antilogit(1.32)
+```
+
+
+```{r}
+
 ```
 
 -=
