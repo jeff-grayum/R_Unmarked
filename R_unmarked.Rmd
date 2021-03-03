@@ -201,9 +201,21 @@ antilogit(-0.665)
 antilogit(1.32)
 ```
 
-
+Now, we will add some covariates, assuming constant detection.
 ```{r}
+fm1 <- occu(formula = ~ 1
+                      ~ forest + elev + length,
+            data = umf)
 
+fm1
+
+#It worked! Let's add some more!
+fm2 <- occu(formula = ~ date + ivel + forest
+                      ~ forest + elev + length,
+            data = umf)
+
+fm2
+#This worked, but I'm a bit confused as to why forest was added to both formulas, and not just the bottom one.
 ```
 
 -=
