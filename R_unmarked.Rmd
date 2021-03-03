@@ -155,4 +155,15 @@ summary(umf)
 #IT WORKED.  This is super cool.
 ```
 
+
+Standardizing the data.  Note: unmarked df (umf) is a class 4 object.  $ replaced with @
+```{r}
+umf@siteCovs$elev <- scale(umf@siteCovs$elev)
+umf@siteCovs$forest <- scale(umf@siteCovs$forest)
+umf@siteCovs$length <- scale(umf@siteCovs$length)
+
+umf@obsCovs$date <- scale(umf@obsCovs$date)
+umf@obsCovs$ivel <- scale(umf@obsCovs$ivel)
+```
+
 -=
