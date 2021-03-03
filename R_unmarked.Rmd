@@ -34,6 +34,8 @@ library(AICcmodavg)
 library(sf)
 #install.packages("rgdal")
 library(rgdal)
+#install.packages("MuMIn")
+library(MuMIn)
 ```
 
 -Often we won't know how many any individuals are occupying a study area.  We only know how many have been detected at each survey point.  Other individuals? Overlap between detections?
@@ -216,6 +218,52 @@ fm2 <- occu(formula = ~ date + ivel + forest
 
 fm2
 #This worked, but I'm a bit confused as to why forest was added to both formulas, and not just the bottom one.
+```
+
+Model selection
+-This is an in-built model selection method using fitList() and modSel() 
+-Name models whatever you like, below is common online
+```{r}
+fit <- fitList('psi(.)p(.)' = fm,
+               'psi(forest + elev + length)p(.)' = fm1,
+               'psi(forest + elev + length)p(date + ivel + forest)' = fm2)
+
+modSel(fit)
+```
+
+
+MuMIn
+-All unmarked models are compatible with the functions in the MuMIn package. (ex: dredge() and pdredge() fucntions perfrom dredge-based model selection that takes a full/global model and fits every possible combination of covariates and ranks them by some info criteria (AIC, BIC, etc)) 
+```{r}
+full <- occu(formula = ~ date + ivel + forest
+                       ~ forest + elev + length,
+             data = umf)
+
+modelList <- dredge(full,
+                    rank = "AIC") 
+
+modelList
+```
+
+
+Missing data
+-Info criteria like AIC are NOT comparable between models fit to different data sets.(EX if model A has covariates 1 and 2 and 100 sites, cannot compare to model B with covariates 1, 2, 3 and 90 sites)
+-To account for this, must manually remove data for all sites/obs that are missing data for any covariates that could potentially be included in the model.
+Proportion of area occupied
+-Imperfect detection can bias our occupancy estimates.  How do we calculate actual propotion of area occupied while accounting for imperfect detection?
+
+Assuming perfect detection (naive) --> Just number of sites where sp observed divided by number of sites.
+```{r}
+siteValue <- apply(X = data[,2:4],
+                   MARGIN = 1,
+                   FUN = "max", na.rm = TRUE)
+
+mean(siteValue)
+```
+
+
+```{r}
+
 ```
 
 -=
